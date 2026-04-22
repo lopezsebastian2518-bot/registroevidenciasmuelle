@@ -128,50 +128,68 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray
 .count-badge{margin-left:auto;background:var(--blue-100);color:var(--blue-700,#1d4ed8);font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;border:1px solid var(--blue-200,#bfdbfe);}
 .section-note{font-size:11px;color:var(--gray-500);background:var(--amber-100);padding:8px 10px;border-radius:6px;margin-bottom:12px;border-left:3px solid var(--amber-500);}
 
-/* ── CÁMARA ─────────────────────────────────────────────────── */
+/* ── CÁMARA VEHÍCULO — PANTALLA COMPLETA 9:16 ──────────────── */
 .btn-toggle-cam{margin-left:auto;padding:5px 12px;background:var(--blue-50);color:var(--blue-600);border:1.5px solid var(--blue-100);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
 .btn-toggle-cam.active{background:var(--red-100);color:var(--red-600);border-color:#fecaca;}
-.cam-container{position:relative;border-radius:var(--radius-sm);overflow:hidden;background:#000;margin-bottom:8px;}
-.cam-container video{width:100%;max-height:240px;object-fit:cover;display:block;}
+
+/* Overlay de cámara de vehículo — fullscreen 9:16 */
+.cam-fullscreen{position:fixed;inset:0;background:#000;z-index:500;display:flex;flex-direction:column;}
+.cam-fullscreen.hidden{display:none!important;}
+.cam-fs-header{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent);z-index:10;flex-shrink:0;}
+.cam-fs-header h3{color:white;font-size:15px;font-weight:700;}
+.cam-fs-header p{color:rgba(255,255,255,0.6);font-size:11px;margin-top:2px;}
+.cam-fs-video-wrap{flex:1;position:relative;overflow:hidden;}
+#video{width:100%;height:100%;object-fit:cover;display:block;}
 .cam-overlay{position:absolute;inset:0;pointer-events:none;}
-.cam-corner{position:absolute;width:22px;height:22px;border-color:rgba(255,255,255,0.7);border-style:solid;}
-.cam-corner.tl{top:10px;left:10px;border-width:2px 0 0 2px}
-.cam-corner.tr{top:10px;right:10px;border-width:2px 2px 0 0}
-.cam-corner.bl{bottom:10px;left:10px;border-width:0 0 2px 2px}
-.cam-corner.br{bottom:10px;right:10px;border-width:0 2px 2px 0}
+.cam-corner{position:absolute;width:28px;height:28px;border-color:rgba(255,255,255,0.85);border-style:solid;}
+.cam-corner.tl{top:14px;left:14px;border-width:3px 0 0 3px;}
+.cam-corner.tr{top:14px;right:14px;border-width:3px 3px 0 0;}
+.cam-corner.bl{bottom:14px;left:14px;border-width:0 0 3px 3px;}
+.cam-corner.br{bottom:14px;right:14px;border-width:0 3px 3px 0;}
+.cam-fs-footer{position:absolute;bottom:0;left:0;right:0;padding:20px 24px 32px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);display:flex;align-items:center;justify-content:space-between;z-index:10;}
+.cam-fs-counter{color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;background:rgba(0,0,0,0.4);padding:6px 14px;border-radius:20px;}
+.btn-capture-cam{width:74px;height:74px;border-radius:50%;background:white;border:5px solid rgba(255,255,255,0.35);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+.btn-capture-cam:active{transform:scale(0.88);}
+.btn-capture-cam svg{width:32px;height:32px;color:#111;}
+.btn-cam-close{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.btn-cam-close svg{width:22px;height:22px;}
+
+/* Contenedor antiguo — ya no usado como inline, se oculta */
+.cam-container{display:none!important;}
 .cam-btn-row{display:flex;gap:8px;margin-top:4px;}
 
-/* ── SCANNER MODAL ─────────────────────────────────────────── */
+/* ── SCANNER MODAL — PANTALLA COMPLETA 9:16 ────────────────── */
 .scanner-overlay{position:fixed;inset:0;background:#000;z-index:500;display:flex;flex-direction:column;}
-.scanner-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.8);flex-shrink:0;}
+.scanner-header{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.75),transparent);z-index:10;flex-shrink:0;}
 .scanner-header h3{color:white;font-size:15px;font-weight:700;}
 .scanner-header p{color:rgba(255,255,255,0.6);font-size:11px;margin-top:2px;}
 .scanner-video-wrap{flex:1;position:relative;overflow:hidden;}
 #scanner-video{width:100%;height:100%;object-fit:cover;display:block;}
 .scanner-guides{position:absolute;inset:0;pointer-events:none;}
-.scanner-dim{position:absolute;inset:0;background:rgba(0,0,0,0.45);}
-/* Rectángulo de detección del documento */
-.scanner-rect{position:absolute;top:10%;left:5%;right:5%;bottom:10%;border:2.5px solid rgba(255,255,255,0.0);border-radius:4px;transition:border-color 0.3s;}
-.scanner-rect.detected{border-color:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,0.3),inset 0 0 30px rgba(34,197,94,0.08);}
-.scanner-rect.detecting{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,0.3);}
-.scanner-corners .sc{position:absolute;width:28px;height:28px;}
+.scanner-dim{position:absolute;inset:0;background:rgba(0,0,0,0.38);}
+/* Rectángulo de detección del documento — proporciones A4 */
+.scanner-rect{position:absolute;top:12%;left:6%;right:6%;bottom:18%;border:2.5px solid rgba(255,255,255,0.0);border-radius:6px;transition:border-color 0.3s,box-shadow 0.3s;}
+.scanner-rect.detected{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,0.35),inset 0 0 40px rgba(34,197,94,0.10);}
+.scanner-rect.detecting{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,0.35);}
+/* Esquinas del encuadre (visibles siempre) */
+.scanner-corners .sc{position:absolute;width:32px;height:32px;}
 .scanner-corners .sc::before,.scanner-corners .sc::after{content:'';position:absolute;background:white;border-radius:2px;}
-.scanner-corners .sc.tl{top:-1px;left:-1px;}.sc.tl::before{top:0;left:0;width:4px;height:20px;}.sc.tl::after{top:0;left:0;width:20px;height:4px;}
-.scanner-corners .sc.tr{top:-1px;right:-1px;}.sc.tr::before{top:0;right:0;width:4px;height:20px;}.sc.tr::after{top:0;right:0;width:20px;height:4px;}
-.scanner-corners .sc.bl{bottom:-1px;left:-1px;}.sc.bl::before{bottom:0;left:0;width:4px;height:20px;}.sc.bl::after{bottom:0;left:0;width:20px;height:4px;}
-.scanner-corners .sc.br{bottom:-1px;right:-1px;}.sc.br::before{bottom:0;right:0;width:4px;height:20px;}.sc.br::after{bottom:0;right:0;width:20px;height:4px;}
-.scanner-line{position:absolute;left:5%;right:5%;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.8),transparent);animation:scanLine 2s ease-in-out infinite;top:10%;}
-@keyframes scanLine{0%{top:10%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:90%;opacity:0}}
-.scanner-status{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:white;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;backdrop-filter:blur(8px);white-space:nowrap;transition:all 0.3s;}
-.scanner-status.ok{background:rgba(22,163,74,0.85);}
-.scanner-status.warn{background:rgba(245,158,11,0.85);}
-.scanner-footer{padding:16px;background:rgba(0,0,0,0.85);flex-shrink:0;display:flex;flex-direction:column;gap:10px;align-items:center;}
-.btn-capture-scan{width:70px;height:70px;border-radius:50%;background:white;color:var(--gray-900);border:5px solid rgba(255,255,255,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.scanner-corners .sc.tl{top:-2px;left:-2px;}.sc.tl::before{top:0;left:0;width:4px;height:24px;}.sc.tl::after{top:0;left:0;width:24px;height:4px;}
+.scanner-corners .sc.tr{top:-2px;right:-2px;}.sc.tr::before{top:0;right:0;width:4px;height:24px;}.sc.tr::after{top:0;right:0;width:24px;height:4px;}
+.scanner-corners .sc.bl{bottom:-2px;left:-2px;}.sc.bl::before{bottom:0;left:0;width:4px;height:24px;}.sc.bl::after{bottom:0;left:0;width:24px;height:4px;}
+.scanner-corners .sc.br{bottom:-2px;right:-2px;}.sc.br::before{bottom:0;right:0;width:4px;height:24px;}.sc.br::after{bottom:0;right:0;width:24px;height:4px;}
+.scanner-line{position:absolute;left:6%;right:6%;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.9),transparent);animation:scanLine 2s ease-in-out infinite;top:12%;}
+@keyframes scanLine{0%{top:12%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:82%;opacity:0}}
+.scanner-status{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:white;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;backdrop-filter:blur(8px);white-space:nowrap;transition:all 0.3s;z-index:10;}
+.scanner-status.ok{background:rgba(22,163,74,0.88);}
+.scanner-status.warn{background:rgba(245,158,11,0.88);}
+.scanner-footer{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 32px;background:linear-gradient(to top,rgba(0,0,0,0.88),transparent);flex-shrink:0;display:flex;flex-direction:column;gap:10px;align-items:center;z-index:10;}
+.btn-capture-scan{width:74px;height:74px;border-radius:50%;background:white;color:var(--gray-900);border:5px solid rgba(255,255,255,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
 .btn-capture-scan:active{transform:scale(0.9);}
-.btn-capture-scan svg{width:30px;height:30px;}
+.btn-capture-scan svg{width:32px;height:32px;}
 .scanner-tip{color:rgba(255,255,255,0.5);font-size:11px;text-align:center;}
-.scanner-counter{color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;}
-.btn-scanner-done{padding:10px 28px;background:var(--green-600);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;}
+.scanner-counter{color:rgba(255,255,255,0.85);font-size:13px;font-weight:600;}
+.btn-scanner-done{padding:10px 32px;background:var(--green-600);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;}
 .btn-scanner-done:hover{background:var(--green-700);}
 
 /* ── CAPTURA BUTTONS ─────────────────────────────────────────── */
@@ -380,13 +398,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray
         Evidencias del Vehículo
         <span class="count-badge" id="count-fotos">0</span>
       </div>
-      <div id="cam-container" class="cam-container hidden">
-        <video id="video" autoplay playsinline muted></video>
-        <div class="cam-overlay">
-          <div class="cam-corner tl"></div><div class="cam-corner tr"></div>
-          <div class="cam-corner bl"></div><div class="cam-corner br"></div>
-        </div>
-      </div>
       <div class="capture-actions">
         <button class="btn-capture" id="btn-cam-fotos" onclick="toggleCameraFotos()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -395,13 +406,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray
         <button class="btn-capture btn-upload" onclick="subirArchivo('fotos')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
           Subir
-        </button>
-      </div>
-      <!-- Botón capturar aparece solo cuando cámara activa -->
-      <div id="fotos-capture-row" class="cam-btn-row hidden">
-        <button class="btn-capture" style="background:var(--green-600);flex:1" onclick="capturarFoto()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
-          Tomar Foto
         </button>
       </div>
       <div id="preview-fotos" class="preview-grid"></div>
@@ -447,6 +451,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray
       <p class="actions-note">Puedes descargar el PDF, enviarlo por correo, o ambas opciones.</p>
     </div>
 
+  </div>
+</div>
+
+<!-- ====== CÁMARA VEHÍCULO — PANTALLA COMPLETA ====== -->
+<div id="cam-fullscreen" class="cam-fullscreen hidden">
+  <div class="cam-fs-header">
+    <div>
+      <h3>📷 Cámara — Evidencia Vehículo</h3>
+      <p>Encuadra el vehículo y toca el botón para capturar</p>
+    </div>
+    <button class="btn-cam-close" onclick="detenerCamaraFotos()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="cam-fs-video-wrap">
+    <video id="video" autoplay playsinline muted></video>
+    <div class="cam-overlay">
+      <div class="cam-corner tl"></div><div class="cam-corner tr"></div>
+      <div class="cam-corner bl"></div><div class="cam-corner br"></div>
+    </div>
+  </div>
+  <div class="cam-fs-footer">
+    <div class="cam-fs-counter" id="cam-fs-counter">0 fotos</div>
+    <button class="btn-capture-cam" onclick="capturarFoto()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    </button>
+    <div style="width:48px"></div>
   </div>
 </div>
 
@@ -640,8 +671,6 @@ function abrirVehiculo(placa) {
   renderPreviews('fotos'); renderPreviews('documentos'); actualizarCounts();
   detenerCamaraFotos();
   document.getElementById('btn-cam-fotos-txt').textContent = 'Activar Cámara';
-  document.getElementById('cam-container').classList.add('hidden');
-  document.getElementById('fotos-capture-row').classList.add('hidden');
   showScreen('detalle');
 }
 function renderVehiculos() {
@@ -678,7 +707,7 @@ function volver() {
   showScreen('main'); renderVehiculos();
 }
 
-// ── CÁMARA FOTOS VEHÍCULO ─────────────────────────────────────────
+// ── CÁMARA FOTOS VEHÍCULO — FULLSCREEN ───────────────────────────
 async function toggleCameraFotos() {
   if (!camaraFotosOn) { await activarCamaraFotos(); }
   else { detenerCamaraFotos(); }
@@ -686,23 +715,27 @@ async function toggleCameraFotos() {
 async function activarCamaraFotos() {
   try {
     streamFotos = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }, audio:false
+      video: { facingMode:'environment', width:{ideal:1920}, height:{ideal:1080} }, audio:false
     });
     document.getElementById('video').srcObject = streamFotos;
-    document.getElementById('cam-container').classList.remove('hidden');
-    document.getElementById('fotos-capture-row').classList.remove('hidden');
+    document.getElementById('cam-fullscreen').classList.remove('hidden');
     document.getElementById('btn-cam-fotos-txt').textContent = 'Apagar Cámara';
     camaraFotosOn = true;
+    actualizarContadorCamFotos();
   } catch(e) { showToast('No se pudo acceder a la cámara','error'); }
 }
 function detenerCamaraFotos() {
   if (streamFotos) { streamFotos.getTracks().forEach(t => t.stop()); streamFotos = null; }
   const v = document.getElementById('video');
   if (v) v.srcObject = null;
-  document.getElementById('cam-container').classList.add('hidden');
-  document.getElementById('fotos-capture-row').classList.add('hidden');
+  document.getElementById('cam-fullscreen').classList.add('hidden');
   document.getElementById('btn-cam-fotos-txt').textContent = 'Activar Cámara';
   camaraFotosOn = false;
+}
+function actualizarContadorCamFotos() {
+  const total = vehiculos[placaActiva] ? (vehiculos[placaActiva].fotos||[]).length : 0;
+  const el = document.getElementById('cam-fs-counter');
+  if (el) el.textContent = total + ' foto' + (total !== 1 ? 's' : '');
 }
 function capturarFoto() {
   const video  = document.getElementById('video');
@@ -714,6 +747,7 @@ function capturarFoto() {
   canvas.width = w; canvas.height = h;
   canvas.getContext('2d').drawImage(video, 0, 0, w, h);
   agregarImagen('fotos', canvas.toDataURL('image/jpeg', 0.82));
+  actualizarContadorCamFotos();
   // Flash
   const f = document.createElement('div');
   f.style.cssText = 'position:fixed;inset:0;background:white;opacity:0.75;z-index:999;pointer-events:none;';
