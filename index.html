@@ -6,11 +6,202 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --blue-900: #1e3a8a; --blue-800: #1d4ed8; --blue-600: #2563eb;
+      --blue-500: #3b82f6; --blue-100: #dbeafe; --blue-50: #eff6ff;
+      --green-600: #16a34a; --green-500: #22c55e;
+      --red-500: #ef4444; --red-100: #fee2e2;
+      --gray-900: #111827; --gray-700: #374151; --gray-500: #6b7280;
+      --gray-300: #d1d5db; --gray-100: #f3f4f6; --gray-50: #f9fafb;
+      --white: #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+      --radius: 12px; --radius-sm: 8px; --radius-lg: 18px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--gray-50); color: var(--gray-900); -webkit-font-smoothing: antialiased; }
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .screen.hidden { display: none; }
+    .screen.active { display: flex; }
+    .hidden { display: none !important; }
+
+    /* LOGIN */
+    #screen-login { background: var(--blue-900); align-items: center; justify-content: center; overflow-y: auto; }
+    .login-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+    .login-grid { position: absolute; inset: -10%; background-image: linear-gradient(rgba(59,130,246,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.15) 1px, transparent 1px); background-size: 40px 40px; animation: gridMove 20s linear infinite; }
+    @keyframes gridMove { 0%{transform:translate(0,0)} 100%{transform:translate(40px,40px)} }
+    .login-container { position: relative; z-index: 1; width: 100%; max-width: 400px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .login-logo { display: flex; align-items: center; gap: 12px; animation: fadeDown 0.6s ease; }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    .logo-icon { width: 52px; height: 52px; background: rgba(255,255,255,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); }
+    .logo-icon svg { width: 32px; height: 32px; }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-main { font-family: 'Space Mono', monospace; font-size: 24px; font-weight: 700; color: white; }
+    .logo-sub { font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; text-transform: uppercase; }
+    .login-card { width: 100%; background: var(--white); border-radius: var(--radius-lg); padding: 28px 24px; box-shadow: var(--shadow-lg); animation: fadeUp 0.6s ease 0.1s both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .login-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .login-subtitle { font-size: 13px; color: var(--gray-500); margin-bottom: 20px; }
+    .login-footer { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Space Mono', monospace; }
+
+    /* FIELDS */
+    .field-group { margin-bottom: 14px; }
+    .field-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 0.3px; text-transform: uppercase; }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .input-icon { position: absolute; left: 12px; width: 18px; height: 18px; color: var(--gray-500); pointer-events: none; }
+    .input-wrapper input { width: 100%; padding: 12px 12px 12px 40px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-900); background: var(--white); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .input-wrapper input:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+    .input-wrapper input::placeholder { color: var(--gray-300); }
+    .toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; padding: 4px; color: var(--gray-500); }
+    .toggle-pass svg { width: 18px; height: 18px; }
+    .select-wrapper { position: relative; }
+    .select-wrapper select { width: 100%; padding: 12px 40px 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-900); background: var(--white); outline: none; appearance: none; cursor: pointer; }
+    .select-wrapper select:focus { border-color: var(--blue-500); }
+    .select-wrapper > svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--gray-500); pointer-events: none; }
+
+    /* BUTTONS */
+    .btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 20px; background: var(--blue-600); color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .btn-primary:hover { background: var(--blue-800); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary svg { width: 18px; height: 18px; }
+    .btn-primary.btn-full { width: 100%; margin-top: 8px; }
+    .btn-secondary { padding: 11px 20px; background: var(--gray-100); color: var(--gray-700); border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .btn-icon { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; border: none; background: rgba(255,255,255,0.15); color: white; cursor: pointer; transition: background 0.2s; }
+    .btn-icon:hover { background: rgba(255,255,255,0.25); }
+    .btn-icon svg { width: 18px; height: 18px; }
+
+    /* ALERT */
+    .alert-error { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--red-100); color: var(--red-500); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; margin-bottom: 12px; animation: shake 0.4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    .alert-error svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* HEADER */
+    .app-header { background: var(--blue-900); padding: 0 16px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .header-logo { display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: white; }
+    .header-logo svg { width: 24px; height: 24px; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .user-badge { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(255,255,255,0.12); border-radius: 20px; color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 500; }
+    .user-badge svg { width: 14px; height: 14px; }
+
+    /* MAIN */
+    .main-content { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .section-header h3 { font-size: 16px; font-weight: 700; color: var(--gray-700); }
+    .vehicle-count { font-size: 12px; font-weight: 600; color: var(--blue-600); background: var(--blue-50); padding: 4px 10px; border-radius: 20px; }
+
+    /* VEHICLE GRID */
+    .vehicle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
+    .vehicle-card { background: var(--white); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; box-shadow: var(--shadow-sm); border: 2px solid transparent; transition: all 0.2s; position: relative; animation: cardIn 0.3s ease; }
+    @keyframes cardIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+    .vehicle-card:hover { border-color: var(--blue-500); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .vehicle-icon { width: 52px; height: 52px; background: var(--blue-50); border-radius: 12px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
+    .vehicle-icon svg { width: 28px; height: 28px; color: var(--blue-600); }
+    .vehicle-placa { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: var(--gray-900); word-break: break-all; line-height: 1.4; }
+    .vehicle-meta { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
+    .vehicle-photos-badge { position: absolute; top: -6px; right: -6px; background: var(--blue-600); color: white; font-size: 10px; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 48px 24px; color: var(--gray-500); }
+    .empty-state svg { width: 80px; height: 60px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state p { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+
+    /* FAB */
+    .fab-btn { position: fixed; bottom: 24px; right: 24px; width: 58px; height: 58px; border-radius: 50%; background: var(--green-600); color: white; border: none; cursor: pointer; box-shadow: 0 6px 20px rgba(22,163,74,0.4); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; z-index: 50; }
+    .fab-btn:hover { transform: scale(1.08); }
+    .fab-btn svg { width: 26px; height: 26px; }
+
+    /* DETALLE */
+    #screen-detalle { background: var(--gray-50); }
+    .detalle-header { background: var(--blue-900); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .btn-back { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.12); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .btn-back svg { width: 18px; height: 18px; }
+    .placa-badge { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: white; background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 8px; max-width: 200px; text-align: center; word-break: break-all; line-height: 1.4; }
+    .detalle-content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; padding-bottom: 32px; }
+
+    /* SECTION CARDS */
+    .section-card { background: var(--white); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
+    .section-card-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--gray-700); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .section-card-title svg { width: 16px; height: 16px; color: var(--blue-600); flex-shrink: 0; }
+    .count-badge { margin-left: auto; background: var(--blue-100); color: var(--blue-600); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .section-note { font-size: 11px; color: var(--gray-500); background: var(--gray-100); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #60a5fa; }
+
+    /* CAMERA */
+    .btn-toggle-cam { margin-left: auto; padding: 5px 12px; background: var(--blue-50); color: var(--blue-600); border: 1.5px solid var(--blue-100); border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .cam-container { position: relative; border-radius: var(--radius-sm); overflow: hidden; background: #000; margin-bottom: 4px; }
+    .cam-container video { width: 100%; max-height: 260px; object-fit: cover; display: block; }
+    .cam-overlay { position: absolute; inset: 0; pointer-events: none; }
+    .cam-corner { position: absolute; width: 20px; height: 20px; border-color: rgba(255,255,255,0.6); border-style: solid; }
+    .cam-corner.tl{top:10px;left:10px;border-width:2px 0 0 2px}
+    .cam-corner.tr{top:10px;right:10px;border-width:2px 2px 0 0}
+    .cam-corner.bl{bottom:10px;left:10px;border-width:0 0 2px 2px}
+    .cam-corner.br{bottom:10px;right:10px;border-width:0 2px 2px 0}
+
+    /* CAPTURE */
+    .capture-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+    .btn-capture { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 10px; background: var(--blue-600); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s; }
+    .btn-capture:hover { background: var(--blue-800); }
+    .btn-capture svg { width: 16px; height: 16px; }
+    .btn-capture.btn-upload { background: var(--gray-700); }
+    .btn-capture.btn-upload:hover { background: var(--gray-900); }
+
+    /* PREVIEW */
+    .preview-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .preview-item { position: relative; width: 90px; height: 90px; animation: photoIn 0.3s ease; }
+    @keyframes photoIn { from{opacity:0;transform:scale(0.7) rotate(-3deg)} to{opacity:1;transform:scale(1) rotate(0)} }
+    .preview-item img { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-100); display: block; }
+    .preview-item.doc-preview img { filter: grayscale(100%) contrast(1.2) brightness(1.05); }
+    .preview-num { position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 4px; }
+    .delete-photo { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; background: var(--red-500); color: white; border: 2px solid white; border-radius: 50%; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; transition: transform 0.15s; }
+    .delete-photo:hover { transform: scale(1.2); }
+
+    /* SEND */
+    .send-section { padding: 4px 0 8px; text-align: center; }
+    .btn-send { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; background: var(--green-600); color: white; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 6px 20px rgba(22,163,74,0.35); transition: all 0.2s; }
+    .btn-send:hover { background: #15803d; }
+    .btn-send:active { transform: scale(0.98); }
+    .btn-send:disabled { background: var(--gray-300); box-shadow: none; cursor: not-allowed; }
+    .btn-send svg { width: 20px; height: 20px; }
+    .send-note { font-size: 11px; color: var(--gray-500); margin-top: 8px; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal-box { background: var(--white); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 360px; box-shadow: var(--shadow-lg); animation: slideUp 0.25s ease; }
+    @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .modal-header h3 { font-size: 18px; font-weight: 700; }
+    .modal-header .btn-icon { background: var(--gray-100); color: var(--gray-700); width: 32px; height: 32px; }
+    .modal-box > p { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .modal-actions > * { flex: 1; }
+
+    /* LOADER */
+    .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 300; }
+    .loader-box { background: var(--white); border-radius: var(--radius-lg); padding: 32px 28px; text-align: center; min-width: 200px; }
+    .loader-spinner { width: 44px; height: 44px; border: 3px solid var(--blue-100); border-top-color: var(--blue-600); border-radius: 50%; margin: 0 auto 16px; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .loader-box p { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+    .loader-box span { font-size: 12px; color: var(--gray-500); }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 400; pointer-events: none; }
+    .toast-inner { display: flex; align-items: center; gap: 8px; background: var(--gray-900); color: white; padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; box-shadow: var(--shadow-lg); white-space: nowrap; }
+    .toast-inner svg { width: 18px; height: 18px; color: var(--green-500); }
+    .toast.error .toast-inner svg { color: var(--red-500); }
+    .toast.warning .toast-inner svg { color: #fbbf24; }
+    .toast.show { animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards; }
+    @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+    @keyframes toastOut { from{opacity:1;transform:translateX(-50%) translateY(0)} to{opacity:0;transform:translateX(-50%) translateY(10px)} }
+
+    @media (max-width:360px) { .vehicle-grid{grid-template-columns:repeat(2,1fr)} }
+    @media (min-width:600px) { .detalle-content{max-width:600px;margin:0 auto} .main-content{max-width:700px;margin:0 auto;width:100%} }
+    ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:4px}
+  </style>
 </head>
 <body>
 
-<!-- ====== PANTALLA LOGIN ====== -->
+<!-- ====== LOGIN ====== -->
 <div id="screen-login" class="screen active">
   <div class="login-bg"><div class="login-grid"></div></div>
   <div class="login-container">
@@ -20,7 +211,6 @@
           <rect x="4" y="14" width="32" height="20" rx="3" fill="#2563eb"/>
           <rect x="10" y="8" width="20" height="10" rx="2" fill="#1d4ed8"/>
           <circle cx="20" cy="24" r="4" fill="white"/>
-          <rect x="18" y="22" width="4" height="4" rx="1" fill="#2563eb"/>
         </svg>
       </div>
       <div class="logo-text">
@@ -28,11 +218,9 @@
         <span class="logo-sub">Sistema de Evidencias</span>
       </div>
     </div>
-
     <div class="login-card">
       <h2>Acceso al Sistema</h2>
       <p class="login-subtitle">Ingrese sus credenciales para continuar</p>
-
       <div class="field-group">
         <label>Usuario</label>
         <div class="input-wrapper">
@@ -40,7 +228,6 @@
           <input type="text" id="inp-usuario" placeholder="Nombre de usuario" autocomplete="off">
         </div>
       </div>
-
       <div class="field-group">
         <label>Contraseña</label>
         <div class="input-wrapper">
@@ -51,12 +238,10 @@
           </button>
         </div>
       </div>
-
       <div id="login-error" class="alert-error hidden">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Usuario o contraseña incorrectos
       </div>
-
       <button class="btn-primary btn-full" id="btn-login" onclick="login()">
         <span>Ingresar</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -66,15 +251,11 @@
   </div>
 </div>
 
-<!-- ====== PANTALLA PRINCIPAL ====== -->
+<!-- ====== PRINCIPAL ====== -->
 <div id="screen-main" class="screen hidden">
   <header class="app-header">
     <div class="header-logo">
-      <svg viewBox="0 0 28 28" fill="none">
-        <rect x="2" y="10" width="24" height="14" rx="2" fill="white" fill-opacity="0.9"/>
-        <rect x="6" y="5" width="14" height="8" rx="1.5" fill="white" fill-opacity="0.6"/>
-        <circle cx="14" cy="17" r="2.5" fill="#2563eb"/>
-      </svg>
+      <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="10" width="24" height="14" rx="2" fill="white" fill-opacity="0.9"/><rect x="6" y="5" width="14" height="8" rx="1.5" fill="white" fill-opacity="0.6"/><circle cx="14" cy="17" r="2.5" fill="#2563eb"/></svg>
       EvidLog
     </div>
     <div class="header-right">
@@ -87,7 +268,6 @@
       </button>
     </div>
   </header>
-
   <div class="main-content">
     <div class="section-header">
       <h3>Vehículos en Proceso</h3>
@@ -95,24 +275,18 @@
     </div>
     <div id="lista-vehiculos" class="vehicle-grid">
       <div class="empty-state" id="empty-state">
-        <svg viewBox="0 0 80 60" fill="none">
-          <rect x="5" y="20" width="70" height="35" rx="4" fill="#dbeafe"/>
-          <rect x="15" y="10" width="40" height="22" rx="3" fill="#93c5fd"/>
-          <circle cx="20" cy="55" r="7" fill="#3b82f6"/>
-          <circle cx="60" cy="55" r="7" fill="#3b82f6"/>
-        </svg>
+        <svg viewBox="0 0 80 60" fill="none"><rect x="5" y="20" width="70" height="35" rx="4" fill="#dbeafe"/><rect x="15" y="10" width="40" height="22" rx="3" fill="#93c5fd"/><circle cx="20" cy="55" r="7" fill="#3b82f6"/><circle cx="60" cy="55" r="7" fill="#3b82f6"/></svg>
         <p>No hay vehículos registrados</p>
         <span>Toca <strong>+</strong> para agregar uno</span>
       </div>
     </div>
   </div>
-
   <button class="fab-btn" onclick="showModalPlaca()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   </button>
 </div>
 
-<!-- ====== PANTALLA DETALLE ====== -->
+<!-- ====== DETALLE ====== -->
 <div id="screen-detalle" class="screen hidden">
   <div class="detalle-header">
     <button class="btn-back" onclick="volver()">
@@ -122,7 +296,6 @@
     <div class="placa-badge" id="placa-badge">—</div>
     <div style="width:80px"></div>
   </div>
-
   <div class="detalle-content">
 
     <div class="section-card">
@@ -154,9 +327,7 @@
       <div class="section-card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Cámara
-        <button class="btn-toggle-cam" onclick="toggleCamera()">
-          <span id="cam-status-text">Activar</span>
-        </button>
+        <button class="btn-toggle-cam" onclick="toggleCamera()"><span id="cam-status-text">Activar</span></button>
       </div>
       <div id="cam-container" class="cam-container hidden">
         <video id="video" autoplay playsinline muted></video>
@@ -192,7 +363,7 @@
         Documentos
         <span class="count-badge" id="count-docs">0</span>
       </div>
-      <p class="section-note">📄 Cada documento ocupará una hoja completa en el PDF (escala de grises)</p>
+      <p class="section-note">📄 1 documento por página en PDF – escala de grises estilo escáner</p>
       <div class="capture-actions">
         <button class="btn-capture" onclick="capturar('documentos')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -213,11 +384,10 @@
       </button>
       <p class="send-note">Las evidencias serán enviadas al correo asociado a tu cuenta</p>
     </div>
-
   </div>
 </div>
 
-<!-- ====== MODAL NUEVA PLACA ====== -->
+<!-- ====== MODAL PLACA ====== -->
 <div id="modal-placa" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="modal-header">
@@ -229,7 +399,6 @@
     <p>Ingrese la placa o identificador del vehículo</p>
     <div class="input-wrapper">
       <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M1 9h22"/></svg>
-      <!-- ✅ maxlength=32 -->
       <input type="text" id="inp-placa" placeholder="Ej: 5CLIENTES CARGUE" style="text-transform:uppercase" maxlength="32" onkeydown="if(event.key==='Enter')crearVehiculo()">
     </div>
     <div class="modal-actions">
@@ -258,6 +427,459 @@
 
 <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFileUpload(event)">
 <canvas id="canvas" style="display:none"></canvas>
-<script src="app.js"></script>
+
+<script>
+// ================================================================
+//  ✅ CONFIGURA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+// ================================================================
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx8e0UuJQsn2_8plYbhMIqZvGw0ttOJSOBzgJkmy8mbL-AJGsKVZHQ-8xI62BMkuQdrtg/exec";
+
+let sessionUser  = null;
+let sessionEmail = null;
+let vehiculos    = {};
+let placaActiva  = null;
+let stream       = null;
+let camaraOn     = false;
+let modoCaptura  = null;
+let fileTarget   = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  cargarSesion();
+  cargarVehiculos();
+});
+
+function cargarSesion() {
+  const saved = localStorage.getItem('evid_session');
+  if (saved) {
+    const s = JSON.parse(saved);
+    sessionUser  = s.usuario;
+    sessionEmail = s.correo;
+    document.getElementById('header-user').textContent = sessionUser;
+    showScreen('main');
+    renderVehiculos();
+  }
+}
+function cargarVehiculos() {
+  const saved = localStorage.getItem('evid_vehiculos');
+  if (saved) vehiculos = JSON.parse(saved);
+}
+function guardarVehiculos() {
+  localStorage.setItem('evid_vehiculos', JSON.stringify(vehiculos));
+}
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.add('hidden'); });
+  const t = document.getElementById('screen-' + name);
+  t.classList.remove('hidden'); t.classList.add('active');
+}
+
+// ─── LOGIN ───────────────────────────────────────────────────────
+async function login() {
+  const usuario  = document.getElementById('inp-usuario').value.trim();
+  const clave    = document.getElementById('inp-clave').value.trim();
+  const errDiv   = document.getElementById('login-error');
+  const btnLogin = document.getElementById('btn-login');
+  if (!usuario || !clave) { showToast('Completa todos los campos', 'error'); return; }
+  errDiv.classList.add('hidden');
+  btnLogin.disabled = true;
+  btnLogin.innerHTML = '<div class="loader-spinner" style="width:20px;height:20px;margin:0;border-width:2px"></div><span>Verificando...</span>';
+  try {
+    const res = await postGAS({ action: 'login', usuario, clave });
+    if (res.success) {
+      sessionUser  = res.usuario;
+      sessionEmail = res.correo;
+      localStorage.setItem('evid_session', JSON.stringify({ usuario: sessionUser, correo: sessionEmail }));
+      document.getElementById('header-user').textContent = sessionUser;
+      showScreen('main');
+      renderVehiculos();
+    } else {
+      errDiv.classList.remove('hidden');
+    }
+  } catch(e) {
+    if (GAS_URL === "https://script.google.com/macros/s/AKfycbx8e0UuJQsn2_8plYbhMIqZvGw0ttOJSOBzgJkmy8mbL-AJGsKVZHQ-8xI62BMkuQdrtg/exec") {
+      sessionUser  = usuario;
+      sessionEmail = usuario + '@empresa.com';
+      localStorage.setItem('evid_session', JSON.stringify({ usuario: sessionUser, correo: sessionEmail }));
+      document.getElementById('header-user').textContent = sessionUser;
+      showToast('Modo demo activo', 'warning');
+      showScreen('main');
+      renderVehiculos();
+    } else {
+      showToast('Error de conexión: ' + e.message, 'error');
+    }
+  }
+  btnLogin.disabled = false;
+  btnLogin.innerHTML = '<span>Ingresar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+}
+
+function logout() {
+  if (!confirm('¿Deseas cerrar sesión?')) return;
+  detenerCamara();
+  sessionUser = null; sessionEmail = null;
+  localStorage.removeItem('evid_session');
+  showScreen('login');
+  document.getElementById('inp-usuario').value = '';
+  document.getElementById('inp-clave').value   = '';
+}
+function togglePass() {
+  const inp = document.getElementById('inp-clave');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ─── VEHÍCULOS ───────────────────────────────────────────────────
+function showModalPlaca() {
+  document.getElementById('modal-placa').classList.remove('hidden');
+  setTimeout(() => document.getElementById('inp-placa').focus(), 100);
+}
+function hideModalPlaca() {
+  document.getElementById('modal-placa').classList.add('hidden');
+  document.getElementById('inp-placa').value = '';
+}
+function crearVehiculo() {
+  const placa = document.getElementById('inp-placa').value.trim().toUpperCase();
+  if (!placa || placa.length < 2) { showToast('Ingresa un identificador válido', 'error'); return; }
+  if (!vehiculos[placa]) {
+    vehiculos[placa] = { fotos:[], documentos:[], categoria:'', responsable:'', fechaCreado: new Date().toISOString() };
+    guardarVehiculos();
+  }
+  hideModalPlaca();
+  abrirVehiculo(placa);
+}
+function abrirVehiculo(placa) {
+  placaActiva = placa;
+  const v = vehiculos[placa];
+  document.getElementById('placa-badge').textContent  = placa;
+  document.getElementById('categoria').value          = v.categoria   || '';
+  document.getElementById('responsable').value        = v.responsable || '';
+  renderPreviews('fotos');
+  renderPreviews('documentos');
+  actualizarCounts();
+  detenerCamara();
+  document.getElementById('cam-status-text').textContent = 'Activar';
+  document.getElementById('cam-container').classList.add('hidden');
+  camaraOn = false;
+  showScreen('detalle');
+}
+function renderVehiculos() {
+  const container  = document.getElementById('lista-vehiculos');
+  const emptyState = document.getElementById('empty-state');
+  const vcCount    = document.getElementById('vehicle-count');
+  const placas     = Object.keys(vehiculos);
+  vcCount.textContent = placas.length + ' vehículo' + (placas.length !== 1 ? 's' : '');
+  container.querySelectorAll('.vehicle-card').forEach(c => c.remove());
+  if (placas.length === 0) { emptyState.style.display = ''; return; }
+  emptyState.style.display = 'none';
+  placas.forEach(placa => {
+    const v = vehiculos[placa];
+    const total = (v.fotos ? v.fotos.length : 0) + (v.documentos ? v.documentos.length : 0);
+    const card = document.createElement('div');
+    card.className = 'vehicle-card';
+    card.onclick = () => abrirVehiculo(placa);
+    card.innerHTML = `
+      ${total > 0 ? `<div class="vehicle-photos-badge">${total}</div>` : ''}
+      <div class="vehicle-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="vehicle-placa">${placa}</div>
+      <div class="vehicle-meta">${v.categoria || 'Sin categoría'}</div>
+      <div class="vehicle-meta">${total} foto${total !== 1 ? 's' : ''}</div>`;
+    container.appendChild(card);
+  });
+}
+function volver() {
+  if (placaActiva && vehiculos[placaActiva]) {
+    vehiculos[placaActiva].categoria   = document.getElementById('categoria').value;
+    vehiculos[placaActiva].responsable = document.getElementById('responsable').value;
+    guardarVehiculos();
+  }
+  detenerCamara();
+  placaActiva = null;
+  showScreen('main');
+  renderVehiculos();
+}
+
+// ─── CÁMARA ──────────────────────────────────────────────────────
+async function toggleCamera() { if (!camaraOn) { await activarCamara(); } else { detenerCamara(); } }
+async function activarCamara() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }, audio:false });
+    document.getElementById('video').srcObject = stream;
+    document.getElementById('cam-container').classList.remove('hidden');
+    document.getElementById('cam-status-text').textContent = 'Apagar';
+    camaraOn = true;
+  } catch(e) { showToast('No se pudo acceder a la cámara', 'error'); }
+}
+function detenerCamara() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  document.getElementById('video').srcObject = null;
+  document.getElementById('cam-container').classList.add('hidden');
+  document.getElementById('cam-status-text').textContent = 'Activar';
+  camaraOn = false;
+}
+function capturar(tipo) {
+  modoCaptura = tipo;
+  if (!camaraOn) { activarCamara().then(() => setTimeout(tomarFotoActual, 600)); }
+  else { tomarFotoActual(); }
+}
+
+// ─── ESCÁNER B&N ─────────────────────────────────────────────────
+function aplicarEfectoEscaner(ctx, w, h) {
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const data = imageData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    let gray = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+    gray = Math.min(255, Math.max(0, (gray - 128) * 1.6 + 148));
+    if (gray > 200) gray = Math.min(255, gray * 1.05);
+    else if (gray < 80) gray = Math.max(0, gray * 0.7);
+    data[i] = data[i+1] = data[i+2] = Math.round(gray);
+  }
+  ctx.putImageData(imageData, 0, 0);
+  return ctx.canvas.toDataURL('image/jpeg', 0.88);
+}
+
+function tomarFotoActual() {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  if (!video.videoWidth) { showToast('Cámara no lista', 'warning'); return; }
+  const MAX_W = 1200;
+  let w = video.videoWidth, h = video.videoHeight;
+  if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, w, h);
+  const base64 = modoCaptura === 'documentos' ? aplicarEfectoEscaner(ctx, w, h) : canvas.toDataURL('image/jpeg', 0.80);
+  agregarImagen(modoCaptura, base64);
+  const f = document.createElement('div');
+  f.style.cssText = 'position:fixed;inset:0;background:white;opacity:0.8;z-index:999;pointer-events:none;';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 200);
+}
+
+function subirArchivo(tipo) {
+  fileTarget = tipo;
+  const input = document.getElementById('file-input');
+  input.value = ''; input.click();
+}
+function handleFileUpload(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  Promise.all(files.map(f => comprimirArchivo(f, fileTarget))).then(results => {
+    results.forEach(b64 => agregarImagen(fileTarget, b64));
+  });
+}
+function comprimirArchivo(file, tipo) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX_W = 1200;
+        let w = img.width, h = img.height;
+        if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+        const canvas = document.getElementById('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(tipo === 'documentos' ? aplicarEfectoEscaner(ctx, w, h) : canvas.toDataURL('image/jpeg', 0.80));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function agregarImagen(tipo, base64) {
+  if (!vehiculos[placaActiva]) return;
+  vehiculos[placaActiva][tipo].push({ base64, ts: Date.now() });
+  guardarVehiculos(); renderPreviews(tipo); actualizarCounts();
+  showToast('Foto agregada', 'success');
+}
+function eliminarImagen(tipo, idx) {
+  vehiculos[placaActiva][tipo].splice(idx, 1);
+  guardarVehiculos(); renderPreviews(tipo); actualizarCounts();
+}
+function renderPreviews(tipo) {
+  const id = tipo === 'fotos' ? 'preview-fotos' : 'preview-docs';
+  const container = document.getElementById(id);
+  const imgs = vehiculos[placaActiva] ? vehiculos[placaActiva][tipo] : [];
+  container.innerHTML = '';
+  imgs.forEach((img, idx) => {
+    const item = document.createElement('div');
+    item.className = 'preview-item' + (tipo === 'documentos' ? ' doc-preview' : '');
+    item.innerHTML = `<img src="${img.base64}" alt="foto ${idx+1}" loading="lazy"><div class="preview-num">${idx+1}</div><button class="delete-photo" onclick="eliminarImagen('${tipo}',${idx})">×</button>`;
+    container.appendChild(item);
+  });
+}
+function actualizarCounts() {
+  if (!vehiculos[placaActiva]) return;
+  document.getElementById('count-fotos').textContent = vehiculos[placaActiva].fotos.length;
+  document.getElementById('count-docs').textContent  = vehiculos[placaActiva].documentos.length;
+}
+
+// ─── GENERAR Y ENVIAR ────────────────────────────────────────────
+async function generarTodo() {
+  const v           = vehiculos[placaActiva];
+  const categoria   = document.getElementById('categoria').value;
+  const responsable = document.getElementById('responsable').value.trim();
+  if (!categoria)   { showToast('Selecciona la categoría', 'error'); return; }
+  if (!responsable) { showToast('Ingresa el nombre del responsable', 'error'); return; }
+  if (v.fotos.length + v.documentos.length === 0) { showToast('Agrega al menos una foto', 'error'); return; }
+  v.categoria = categoria; v.responsable = responsable;
+  guardarVehiculos();
+
+  showLoader('Generando PDF...', 'Por favor espere');
+  try {
+    const pdfBlob = await generarPDFLocal(v, placaActiva);
+    descargaPDF(pdfBlob, placaActiva + '_' + categoria + '_' + fechaFilename() + '.pdf');
+  } catch(err) {
+    hideLoader();
+    showToast('Error al generar PDF: ' + err.message, 'error');
+    return;
+  }
+
+  showLoader('Enviando al servidor...', 'Registrando y enviando correo');
+  try {
+    const res = await postGAS({ action:'todo', placa:placaActiva, categoria, responsable, usuario:sessionUser, correo:sessionEmail, fotos:v.fotos, documentos:v.documentos });
+    if (res && res.success) {
+      hideLoader();
+      showToast('✓ Registrado y correo enviado', 'success');
+    } else {
+      hideLoader();
+      showToast('Error servidor: ' + (res.error || 'desconocido'), 'error');
+      return;
+    }
+  } catch(e) {
+    hideLoader();
+    showToast('Error de conexión: ' + e.message, 'error');
+    return;
+  }
+
+  detenerCamara();
+  delete vehiculos[placaActiva];
+  guardarVehiculos();
+  placaActiva = null;
+  showScreen('main');
+  renderVehiculos();
+}
+
+// ─── PDF LOCAL ───────────────────────────────────────────────────
+async function generarPDFLocal(v, placa) {
+  if (!window.jspdf) await cargarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const W = 210, H = 297, M = 10;
+
+  // Portada
+  doc.setFillColor(30,58,138); doc.rect(0,0,W,32,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(20); doc.setFont('helvetica','bold');
+  doc.text('EvidLog', M, 14);
+  doc.setFontSize(11); doc.setFont('helvetica','normal');
+  doc.text('Sistema de Gestión de Evidencias', M, 22);
+  doc.setFontSize(9); doc.text(new Date().toLocaleString('es-CO'), W-M, 22, {align:'right'});
+
+  let y = 42;
+  doc.setFillColor(239,246,255); doc.rect(M, y-4, W-M*2, 64, 'F');
+  doc.setTextColor(30,30,30);
+  const info = [['Placa / ID',placa],['Categoría',v.categoria],['Responsable',v.responsable],['Usuario',sessionUser],['Correo',sessionEmail],['Fecha',new Date().toLocaleString('es-CO')],['Fotos vehículo',v.fotos.length+' imagen(es)'],['Documentos',v.documentos.length+' imagen(es)']];
+  doc.setFontSize(10);
+  info.forEach(([k,val],i) => {
+    const yy = y + i*7;
+    doc.setFont('helvetica','bold'); doc.setTextColor(30,58,138); doc.text(k+':', M+4, yy);
+    doc.setFont('helvetica','normal'); doc.setTextColor(30,30,30); doc.text(String(val||'—'), M+52, yy);
+  });
+
+  // 1 foto por página — Vehículo
+  v.fotos.forEach((img, idx) => {
+    doc.addPage();
+    doc.setFillColor(37,99,235); doc.rect(0,0,W,14,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.text('EVIDENCIA VEHÍCULO #'+(idx+1)+' de '+v.fotos.length+'  |  '+placa+'  |  '+v.categoria+'  |  Resp: '+v.responsable, M, 6);
+    doc.setFont('helvetica','normal'); doc.text('A color – '+new Date().toLocaleString('es-CO'), M, 11);
+    try { doc.addImage(img.base64,'JPEG',M,16,W-M*2,H-16-10,undefined,'FAST'); }
+    catch(e) { doc.setFillColor(220,220,220); doc.rect(M,16,W-M*2,H-26,'F'); }
+  });
+
+  // 1 foto por página — Documentos (B&N)
+  v.documentos.forEach((img, idx) => {
+    doc.addPage();
+    doc.setFillColor(55,65,81); doc.rect(0,0,W,14,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.text('DOCUMENTO #'+(idx+1)+' de '+v.documentos.length+'  |  '+placa+'  |  Escáner B&N', M, 6);
+    doc.setFont('helvetica','normal'); doc.text('Escala de grises – '+new Date().toLocaleString('es-CO'), M, 11);
+    try { doc.addImage(img.base64,'JPEG',M,16,W-M*2,H-16-10,undefined,'FAST'); }
+    catch(e) { doc.setFillColor(220,220,220); doc.rect(M,16,W-M*2,H-26,'F'); }
+  });
+
+  // Footer en todas las páginas
+  const totalPags = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= totalPags; p++) {
+    doc.setPage(p);
+    doc.setFillColor(245,245,245); doc.rect(0,H-8,W,8,'F');
+    doc.setFontSize(7); doc.setTextColor(140,140,140); doc.setFont('helvetica','normal');
+    doc.text(`Página ${p} de ${totalPags}  |  ${placa}  |  ${new Date().toLocaleString('es-CO')}  |  EvidLog v2.0`, W/2, H-2.5, {align:'center'});
+  }
+  return doc.output('blob');
+}
+
+function descargaPDF(blob, nombre) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+// ─── GAS ─────────────────────────────────────────────────────────
+async function postGAS(data) {
+  const res = await fetch(GAS_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────────
+function showLoader(msg, sub) {
+  document.getElementById('loader-msg').textContent = msg || 'Procesando...';
+  document.getElementById('loader-sub').textContent = sub || 'Por favor espere';
+  document.getElementById('loader-overlay').classList.remove('hidden');
+}
+function hideLoader() { document.getElementById('loader-overlay').classList.add('hidden'); }
+
+let toastTimer = null;
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon  = document.getElementById('toast-icon');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.className = 'toast ' + type;
+  const icons = {
+    success: '<polyline points="20 6 9 17 4 12"/>',
+    error:   '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+    warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+  };
+  icon.innerHTML = icons[type] || icons.success;
+  toast.classList.remove('hidden'); toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.classList.add('hidden'), 300);
+  }, 3000);
+}
+function cargarScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+function fechaFilename() {
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+}
+</script>
 </body>
 </html>
